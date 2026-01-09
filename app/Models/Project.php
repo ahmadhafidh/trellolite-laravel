@@ -21,8 +21,9 @@ class Project extends Model
     protected static function booted()
     {
         static::creating(function ($project) {
-            $project->uuid = Str::uuid();
-            $project->user_id = auth()->id();
+            if (empty($project->uuid)) {
+                $project->uuid = (string) Str::uuid();
+            }
         });
     }
 
@@ -30,5 +31,9 @@ class Project extends Model
     {
         return $this->hasMany(Task::class);
     }
-}
 
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+}

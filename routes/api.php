@@ -4,26 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\TaskController;
-use App\Models\Project;
-
-Route::bind('project', function ($value) {
-    return Project::where('uuid', $value)
-        ->where('user_id', auth('api')->id())
-        ->firstOrFail();
-});
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-});
 
-Route::middleware('auth:api')->prefix('auth')->group(function () {
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
-
-Route::middleware('auth:api')->group(function () {
-    Route::apiResource('projects', ProjectController::class);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
 });
 
 Route::middleware('auth:api')->group(function () {
