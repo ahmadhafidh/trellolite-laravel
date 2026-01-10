@@ -3,8 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Auth\Access\AuthorizationException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,14 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (
-            AuthorizationException $e,
+            HttpExceptionInterface $e,
             $request
         ) {
-            if ($request->expectsJson()) {
+            if ($request->is('api/*')) {
                 return response()->json([
-                    'status'  => Response::HTTP_FORBIDDEN,
-                    'message' => 'User not allowed',
-                ], Response::HTTP_FORBIDDEN);
+                    'status'  => $e->getStatusCode(),
+                    'message' => $e->getMessage(),
+                ], $e->getStatusCode());
             }
         });
     })

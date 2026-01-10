@@ -3,13 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Task extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'project_id',
         'title',
@@ -18,16 +15,16 @@ class Task extends Model
         'due_date',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($task) {
+            $task->uuid = (string) Str::uuid();
+        });
+    }
+
     protected $casts = [
         'due_date' => 'datetime',
     ];
-
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-        });
-    }
 
     public function project()
     {

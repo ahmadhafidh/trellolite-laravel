@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class ProjectController extends Controller
 {
@@ -14,9 +16,6 @@ class ProjectController extends Controller
         auth()->shouldUse('api');
     }
 
-    /**
-     * GET /api/projects
-     */
     public function index()
     {
         $projects = Project::where('user_id', auth('api')->id())
@@ -26,9 +25,6 @@ class ProjectController extends Controller
         return ApiResponse::success($projects, 'Data ditemukan');
     }
 
-    /**
-     * POST /api/projects
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -45,30 +41,16 @@ class ProjectController extends Controller
         return ApiResponse::success($project, 'Project berhasil dibuat', 201);
     }
 
-    /**
-     * GET /api/projects/{uuid}
-     */
     public function show(string $uuid)
     {
-        $project = $this->findOwnedProject($uuid);
-
-        if (! $project) {
-            return ApiResponse::error('User not allowed', 403);
-        }
+        $project = $this->getOwnedProject($uuid);
 
         return ApiResponse::success($project, 'Data ditemukan');
     }
 
-    /**
-     * PUT /api/projects/{uuid}
-     */
     public function update(Request $request, string $uuid)
     {
-        $project = $this->findOwnedProject($uuid);
-
-        if (! $project) {
-            return ApiResponse::error('User not allowed', 403);
-        }
+        $project = $this->getOwnedProject($uuid);
 
         $data = $request->validate([
             'title'       => 'required|string|max:150',
@@ -80,31 +62,27 @@ class ProjectController extends Controller
         return ApiResponse::success($project, 'Project berhasil diupdate');
     }
 
-    /**
-     * DELETE /api/projects/{uuid}
-     */
     public function destroy(string $uuid)
     {
-        $project = $this->findOwnedProject($uuid);
-
-        if (! $project) {
-            return ApiResponse::error('User not allowed', 403);
-        }
+        $project = $this->getOwnedProject($uuid);
 
         $project->delete();
 
         return ApiResponse::success(null, 'Project berhasil dihapus');
     }
 
-    /**
-     * ==========================
-     * Helper: ownership checker
-     * ==========================
-     */
-    private function findOwnedProject(string $uuid): ?Project
+    private function getOwnedProject(string $uuid): Project
     {
-        return Project::where('uuid', $uuid)
-            ->where('user_id', auth('api')->id())
-            ->first();
+        $project = Project::where('uuid', $uuid)->first();
+
+        if (! $project) {
+            throw new NotFoundHttpException('Project not found');
+        }
+
+        if ($project->user_id !== auth('api')->id()) {
+            throw new AccessDeniedHttpException('User not allowed');
+        }
+
+        return $project;
     }
 }

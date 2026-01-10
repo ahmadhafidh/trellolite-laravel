@@ -16,6 +16,37 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('projects', ProjectController::class);
-    Route::apiResource('projects.tasks', TaskController::class);
+    Route::get('projects', [ProjectController::class, 'index']);
+    Route::post('projects', [ProjectController::class, 'store']);
+    Route::get('projects/{projectUuid}', [ProjectController::class, 'show']);
+    Route::put('projects/{projectUuid}', [ProjectController::class, 'update']);
+    Route::delete('projects/{projectUuid}', [ProjectController::class, 'destroy']);
+});
+
+Route::middleware('auth:api')->group(function () {
+
+    Route::get(
+        'projects/{projectUuid}/tasks',
+        [TaskController::class, 'index']
+    );
+
+    Route::post(
+        'projects/{projectUuid}/tasks',
+        [TaskController::class, 'store']
+    );
+
+    Route::get(
+        'projects/{projectUuid}/tasks/{taskUuid}',
+        [TaskController::class, 'show']
+    );
+
+    Route::put(
+        'projects/{projectUuid}/tasks/{taskUuid}',
+        [TaskController::class, 'update']
+    );
+
+    Route::delete(
+        'projects/{projectUuid}/tasks/{taskUuid}',
+        [TaskController::class, 'destroy']
+    );
 });
