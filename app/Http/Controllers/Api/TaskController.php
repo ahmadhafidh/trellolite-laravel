@@ -8,6 +8,8 @@ use App\Models\Task;
 use App\Helpers\ApiResponse;
 use App\Http\Resources\TaskResource;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class TaskController extends Controller
 {
@@ -85,10 +87,7 @@ class TaskController extends Controller
 
         $task->delete();
 
-        return ApiResponse::success(
-            null,
-            'Task berhasil dihapus'
-        );
+        return ApiResponse::success(null, 'Task berhasil dihapus');
     }
 
     private function getOwnedProject(string $uuid): Project
@@ -96,11 +95,11 @@ class TaskController extends Controller
         $project = Project::where('uuid', $uuid)->first();
 
         if (! $project) {
-            return abort(404, 'Project not found');
+            throw new NotFoundHttpException('Project not found');
         }
 
         if ($project->user_id !== auth('api')->id()) {
-            return abort(403, 'User not allowed');
+            throw new AccessDeniedHttpException('User not allowed');
         }
 
         return $project;
@@ -113,7 +112,7 @@ class TaskController extends Controller
             ->first();
 
         if (! $task) {
-            return abort(404, 'Task not found');
+            throw new NotFoundHttpException('Task not found');
         }
 
         return $task;
