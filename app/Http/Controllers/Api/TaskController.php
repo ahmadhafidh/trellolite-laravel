@@ -32,7 +32,7 @@ class TaskController extends Controller
 
         return ApiResponse::success(
             TaskResource::collection($tasks),
-            'Data ditemukan'
+            'Get all Data fetch successfully'
         );
     }
 
@@ -46,7 +46,7 @@ class TaskController extends Controller
 
         return ApiResponse::success(
             new TaskResource($task),
-            'Task berhasil dibuat',
+            'Task created',
             201
         );
     }
@@ -58,7 +58,7 @@ class TaskController extends Controller
 
         return ApiResponse::success(
             new TaskResource($task),
-            'Data ditemukan'
+            'Get Data fetch successfully'
         );
     }
 
@@ -76,7 +76,7 @@ class TaskController extends Controller
 
         return ApiResponse::success(
             new TaskResource($task),
-            'Task berhasil diupdate'
+            'Task updated'
         );
     }
 
@@ -87,7 +87,7 @@ class TaskController extends Controller
 
         $task->delete();
 
-        return ApiResponse::success(null, 'Task berhasil dihapus');
+        return ApiResponse::success(null, 'Task deleted');
     }
 
     private function getOwnedProject(string $uuid): Project

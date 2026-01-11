@@ -22,7 +22,7 @@ class ProjectController extends Controller
             ->latest()
             ->get();
 
-        return ApiResponse::success($projects, 'Data ditemukan');
+        return ApiResponse::success($projects, 'get all Data fetch successful');
     }
 
     public function store(Request $request)
@@ -38,14 +38,14 @@ class ProjectController extends Controller
             'user_id'     => auth('api')->id(),
         ]);
 
-        return ApiResponse::success($project, 'Project berhasil dibuat', 201);
+        return ApiResponse::success($project, 'Project created', 201);
     }
 
     public function show(string $uuid)
     {
         $project = $this->getOwnedProject($uuid);
 
-        return ApiResponse::success($project, 'Data ditemukan');
+        return ApiResponse::success($project, 'get Data by id fetch successful');
     }
 
     public function update(Request $request, string $uuid)
@@ -59,7 +59,7 @@ class ProjectController extends Controller
 
         $project->update($data);
 
-        return ApiResponse::success($project, 'Project berhasil diupdate');
+        return ApiResponse::success($project, 'Project updated');
     }
 
     public function destroy(string $uuid)
@@ -68,7 +68,7 @@ class ProjectController extends Controller
 
         $project->delete();
 
-        return ApiResponse::success(null, 'Project berhasil dihapus');
+        return ApiResponse::success(null, 'Project deleted');
     }
 
     private function getOwnedProject(string $uuid): Project
