@@ -32,7 +32,7 @@ This project is designed to be **secure**, **maintainable**, and **ready for fut
 
 ## Prerequisites
 You should have installed:
-- PHP >= 8.2
+- PHP v8.4.11
 - Composer
 - MySQL
 - Git
